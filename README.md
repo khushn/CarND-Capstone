@@ -30,6 +30,13 @@ Run the docker file
 docker run -p 4567:4567 -v $PWD:/capstone -v /tmp/log:/root/.ros/ --rm -it capstone
 ```
 
+### Anaconda alternative to docker
+We can also use Anaconda to have a container environment. This project needs python2. 
+So we create a conda environment called capstone as shown below:
+1. conda create -n capstone python=2.7.12 
+2. source activate conda
+3. Following which we can proceed with the 'pip install -r requirements.txt', shown below
+
 ### Usage
 
 1. Clone the project repository
