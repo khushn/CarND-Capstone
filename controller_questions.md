@@ -40,7 +40,7 @@ I think, in the first cut of implementation, it should be okay to just apply the
 
 what is lowpass, and how to use this?
 
-Ans: A low pass filter also achieves similar results. Basically would remove high ferequency values and smoothen them. This may again be used to have gradually changing velocities in consecutive way points. We don't have to use this implementation. I would suggest revisiting the path planning project of yours. 
+Ans: A low pass filter also achieves similar results. Basically would remove high frequency values and smoothen them. This may again be used to have gradually changing velocities in consecutive way points. We don't have to use this implementation. I would suggest revisiting the path planning project of yours. 
 
 #### Q5
 ・the throttle value ranges 0 to 1, and then I don’t know how to calculate using acceleration
