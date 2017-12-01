@@ -34,7 +34,7 @@ The acceleration value should be calculated using the the current position and t
 to gently approach target point, need to use PID controller, but how? to solve this question, I will relearn the lessons.
 
 ##### My thoughts: 
-I think, in the first cut of implementation, it should be okay to just apply the above logic (of acceleration and jerk within 10 m/s^2 thesholds). We can use PID controller if needed, later on. As a further improvement,
+I think, in the first cut of implementation, it should be okay to just apply the above logic (of acceleration and jerk within 10 m/s^2 and 10 m/s^3 respective thesholds). We can use PID controller if needed, later on. As a further improvement,
 
 #### Q4
 
