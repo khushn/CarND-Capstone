@@ -18,7 +18,9 @@ jer= da/dt (same as that used in Controller project)
 ・How to calculate break force. should I use wheel radiance? or some of car property?
 
 ##### Ans: 
+
 Quoting from text in lesson 5 DBW Node:
+
 ---
 Brake values passed to publish should be in units of torque (N*m). The correct values for brake can be computed using the desired acceleration, weight of the vehicle, and wheel radius
 ---
