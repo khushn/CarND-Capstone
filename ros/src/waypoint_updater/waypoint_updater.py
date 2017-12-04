@@ -3,6 +3,7 @@
 import rospy
 from geometry_msgs.msg import PoseStamped
 from styx_msgs.msg import Lane, Waypoint
+from itertools import islice, cycle
 
 import math
 
@@ -22,7 +23,7 @@ TODO (for Yousuf and Aaron): Stopline location for each traffic light.
 '''
 
 LOOKAHEAD_WPS = 200 # Number of waypoints we will publish. You can change this number
-
+MAX_SPEED_METERS_PER_SEC = 5
 
 class WaypointUpdater(object):
     def __init__(self):
@@ -37,16 +38,26 @@ class WaypointUpdater(object):
         self.final_waypoints_pub = rospy.Publisher('final_waypoints', Lane, queue_size=1)
 
         # TODO: Add other member variables you need below
+        self.waypoints = None
+        self.current_pos = None
+        self.last_wp_ind = None
 
         rospy.spin()
 
-    def pose_cb(self, msg):
-        # TODO: Implement
-        pass
+    def pose_cb(self, PoseStamped):
+        # TODO: Implement    
+        self.current_pos = PoseStamped.pose
+        #rospy.loginfo("WP_Updater: Car position updated to %s", self.current_pose)
+        self.gen_next_waypoints()
+                 
 
-    def waypoints_cb(self, waypoints):
+    def waypoints_cb(self, Lane):
         # TODO: Implement
-        pass
+        if self.waypoints is None:
+            self.waypoints = Lane.waypoints
+            rospy.loginfo('WP_Updater: initial waypoints recieved')
+            self.gen_next_waypoints()
+        
 
     def traffic_cb(self, msg):
         # TODO: Callback for /traffic_waypoint message. Implement
@@ -69,7 +80,57 @@ class WaypointUpdater(object):
             dist += dl(waypoints[wp1].pose.pose.position, waypoints[i].pose.pose.position)
             wp1 = i
         return dist
-
+    
+    def gen_next_waypoints(self):
+        #self.waypoints and  self.current_pose will be null if simulator is not running
+        #Check if it is none and return if None
+        if self.waypoints is None or self.current_pos is None :
+           return
+        carx = self.current_pos.position.x
+        cary = self.current_pos.position.y
+        
+        rospy.loginfo("WP_Updater: Searching closest waypoint at position %f, %f", carx, cary)
+        
+        min_distance = float("inf")
+        min_dist_loc = None
+        start_index = 0
+        end_index = len(self.waypoints)
+        #rospy.loginfo("WP_Updater: start_index and end_index %f, %f", start_index, end_index)
+        if self.last_wp_ind is not None:
+            start_index = self.last_wp_ind - 30
+            end_index = min(end_index,self.last_wp_ind + 30)
+        for i in range(start_index, end_index):
+            waypoint = self.waypoints[i]
+            waypoint_x = waypoint.pose.pose.position.x
+            waypoint_y = waypoint.pose.pose.position.y
+            # dist between car and waypoint
+            dist = math.sqrt((carx -waypoint_x)**2  + (cary -waypoint_y)**2)
+            
+            # check if this distance is minimum distance calculated so far
+            if dist < min_distance:
+                min_distance = dist
+                min_dist_loc = i 
+        
+        closest_wp = self.waypoints[min_dist_loc]
+        closest_wp_pos = closest_wp.pose.pose.position
+        self.last_wp_ind = min_dist_loc
+        rospy.loginfo("WP_Updater: Closest waypoint- idx:%d x:%f y:%f", min_dist_loc, closest_wp_pos.x, closest_wp_pos.y);
+        #cycle(waypoints) is needed as world is cyclical and if we find nearest point at top end of waypoints array we may not have
+        #enough LOOKAHEAD_WPS waypoints ahead of us 
+        next_waypoints = list(islice(cycle(self.waypoints),min_dist_loc, min_dist_loc+LOOKAHEAD_WPS))
+        rospy.loginfo("WP_Updater: lenght of next_waypoints:%f",len(next_waypoints))
+        
+        for i in range(len(next_waypoints) - 1):
+            self.set_waypoint_velocity(next_waypoints, i, MAX_SPEED_METERS_PER_SEC)
+        
+        lane = Lane()
+        lane.waypoints = next_waypoints
+        lane.header.frame_id = '/world'
+        lane.header.stamp = rospy.Time(0)
+        self.final_waypoints_pub.publish(lane)
+            
+        
+        
 
 if __name__ == '__main__':
     try:
