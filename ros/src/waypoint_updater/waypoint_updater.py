@@ -100,8 +100,8 @@ class WaypointUpdater(object):
         num_inds = num_pts
         #rospy.logdebug("WP_Updater: start_index and end_index %f, %f", start_index, end_index)
         if self.last_wp_ind is not None:
-            start_index = (self.last_wp_ind - 30)%num_pts
-            num_inds=60            
+            start_index = self.last_wp_ind
+            num_inds=30 # 30 ahead should be enough            
         for i in range(0, num_inds):
             ind = (start_index+i)%num_pts
             waypoint = self.waypoints[ind]
@@ -118,11 +118,11 @@ class WaypointUpdater(object):
         closest_wp = self.waypoints[min_dist_loc]
         closest_wp_pos = closest_wp.pose.pose.position
         self.last_wp_ind = min_dist_loc
-        rospy.loginfo("WP_Updater: Closest waypoint- idx:%d x:%f y:%f", min_dist_loc, closest_wp_pos.x, closest_wp_pos.y);
+        rospy.logdebug("WP_Updater: Closest waypoint- idx:%d x:%f y:%f", min_dist_loc, closest_wp_pos.x, closest_wp_pos.y);
         #cycle(waypoints) is needed as world is cyclical and if we find nearest point at top end of waypoints array we may not have
         #enough LOOKAHEAD_WPS waypoints ahead of us 
         next_waypoints = list(islice(cycle(self.waypoints),min_dist_loc, min_dist_loc+LOOKAHEAD_WPS))
-        rospy.loginfo("WP_Updater: length of next_waypoints:%f",len(next_waypoints))
+        rospy.logdebug("WP_Updater: length of next_waypoints:%f",len(next_waypoints))
         
         for i in range(len(next_waypoints)):
             self.set_waypoint_velocity(next_waypoints, i, self.max_speed_meters_per_sec)
