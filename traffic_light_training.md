@@ -23,15 +23,16 @@ Tensorboard showed good progress.
   Was able to get validation accuracy 95% +
 
 #### 6. Testing is pending
-  But could not test it so far. When tried running 
+  Update: Now basic testing works on individual files, using command line
 
 <code>
-	python tensorflow/examples/label_image/label_image.py --graph=/tmp/output_graph.pb --labels=/tmp/output_labels.txt --image=/home/khush/self_driving_car/CarND-Capstone/training_images/data/red/frame000542.jpg
+	python tensorflow/examples/label_image/label_image.py --graph=/home/khush/self_driving_car/CarND-Capstone/models/output_graph.pb --labels=/home/khush/self_driving_car/CarND-Capstone/models/output_labels.txt  --input_layer=Placeholder --output_layer=final_result --input_height=224 --input_width=224 --image=/home/khush/self_driving_car/CarND-Capstone/training_images/data/red/frame000542.jpg
 </code>
 
-  It was giving an error like: 
-
-  KeyError: "The name 'import/input' refers to an Operation not in the graph.
-
-  So need to know what is the name of the input layer here. Or figure it out in some way.
+  It gives output like: 
+<code>
+  red 0.994886
+  yellow 0.0051143
+  green 2.99788e-08
+</code>
 
