@@ -22,8 +22,7 @@ as well as to verify your TL classifier.
 TODO (for Yousuf and Aaron): Stopline location for each traffic light.
 '''
 
-LOOKAHEAD_WPS = 200 # Number of waypoints we will publish. You can change this number
-MAX_SPEED_METERS_PER_SEC = 5
+LOOKAHEAD_WPS = 20 # Number of waypoints we will publish. You can change this number
 
 class WaypointUpdater(object):
     def __init__(self):
@@ -41,6 +40,7 @@ class WaypointUpdater(object):
         self.waypoints = None
         self.current_pos = None
         self.last_wp_ind = None
+        self.max_speed_meters_per_sec=0
 
         rospy.spin()
 
@@ -55,8 +55,10 @@ class WaypointUpdater(object):
         # TODO: Implement
         if self.waypoints is None:
             self.waypoints = Lane.waypoints
+            if len(Lane.waypoints) > 0:
+                self.max_speed_meters_per_sec = Lane.waypoints[0].twist.twist.linear.x
             rospy.loginfo('WP_Updater: initial waypoints recieved')
-            self.gen_next_waypoints()
+            #self.gen_next_waypoints()
         
 
     def traffic_cb(self, msg):
@@ -94,13 +96,15 @@ class WaypointUpdater(object):
         min_distance = float("inf")
         min_dist_loc = None
         start_index = 0
-        end_index = len(self.waypoints)
-        #rospy.loginfo("WP_Updater: start_index and end_index %f, %f", start_index, end_index)
+        num_pts = len(self.waypoints)
+        num_inds = num_pts
+        #rospy.logdebug("WP_Updater: start_index and end_index %f, %f", start_index, end_index)
         if self.last_wp_ind is not None:
-            start_index = self.last_wp_ind - 30
-            end_index = min(end_index,self.last_wp_ind + 30)
-        for i in range(start_index, end_index):
-            waypoint = self.waypoints[i]
+            start_index = (self.last_wp_ind - 30)%num_pts
+            num_inds=60            
+        for i in range(0, num_inds):
+            ind = (start_index+i)%num_pts
+            waypoint = self.waypoints[ind]
             waypoint_x = waypoint.pose.pose.position.x
             waypoint_y = waypoint.pose.pose.position.y
             # dist between car and waypoint
@@ -109,7 +113,7 @@ class WaypointUpdater(object):
             # check if this distance is minimum distance calculated so far
             if dist < min_distance:
                 min_distance = dist
-                min_dist_loc = i 
+                min_dist_loc = ind 
         
         closest_wp = self.waypoints[min_dist_loc]
         closest_wp_pos = closest_wp.pose.pose.position
@@ -118,10 +122,10 @@ class WaypointUpdater(object):
         #cycle(waypoints) is needed as world is cyclical and if we find nearest point at top end of waypoints array we may not have
         #enough LOOKAHEAD_WPS waypoints ahead of us 
         next_waypoints = list(islice(cycle(self.waypoints),min_dist_loc, min_dist_loc+LOOKAHEAD_WPS))
-        rospy.loginfo("WP_Updater: lenght of next_waypoints:%f",len(next_waypoints))
+        rospy.loginfo("WP_Updater: length of next_waypoints:%f",len(next_waypoints))
         
-        for i in range(len(next_waypoints) - 1):
-            self.set_waypoint_velocity(next_waypoints, i, MAX_SPEED_METERS_PER_SEC)
+        for i in range(len(next_waypoints)):
+            self.set_waypoint_velocity(next_waypoints, i, self.max_speed_meters_per_sec)
         
         lane = Lane()
         lane.waypoints = next_waypoints
