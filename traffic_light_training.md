@@ -30,9 +30,13 @@ Tensorboard showed good progress.
 </code>
 
   It gives output like: 
+
 <code>
   red 0.994886
+
   yellow 0.0051143
+
   green 2.99788e-08
+  
 </code>
 
