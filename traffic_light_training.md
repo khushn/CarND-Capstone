@@ -74,7 +74,7 @@ Converted 2 variables to const ops.
 </blockquote>
 
 #### 2. Testing of the model
-  Update: Now basic testing works on individual files, using command line
+  Using the below command line
 
 <code>
 	python tensorflow/examples/label_image/label_image.py --graph=/home/khush/self_driving_car/CarND-Capstone/models/sim_model/output_graph.pb --labels=/home/khush/self_driving_car/CarND-Capstone/models/sim_model/output_labels.txt  --input_layer=input --output_layer=final_result --input_height=224 --input_width=224 --image=/home/khush/self_driving_car/CarND-Capstone/data/sim_data/go/g9.jpg
@@ -83,7 +83,7 @@ Converted 2 variables to const ops.
 Gives out output like: 
 
 <blockquote>
-	
+
 	go 0.999956
 
 	stop 4.41143e-05
