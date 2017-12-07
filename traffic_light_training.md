@@ -40,3 +40,34 @@ Tensorboard showed good progress.
   
 </code>
 
+### Training of simulator data
+
+#### 1. Training
+Did the retraining using: 
+
+<code>
+    python tensorflow/examples/image_retraining/retrain.py --image_dir ../data/sim_data/ --architecture mobilenet_1.0_224_quantized
+</code>
+
+##### Results of training
+<image src="tensorboard_sim_data.png"/>
+
+<code>
+	0% (N=100)
+INFO:tensorflow:2017-12-07 15:20:13.655450: Step 3970: Train accuracy = 100.0%
+INFO:tensorflow:2017-12-07 15:20:13.655661: Step 3970: Cross entropy = 0.012413
+INFO:tensorflow:2017-12-07 15:20:13.702566: Step 3970: Validation accuracy = 69.0% (N=100)
+INFO:tensorflow:2017-12-07 15:20:14.176840: Step 3980: Train accuracy = 100.0%
+INFO:tensorflow:2017-12-07 15:20:14.177066: Step 3980: Cross entropy = 0.016685
+INFO:tensorflow:2017-12-07 15:20:14.224112: Step 3980: Validation accuracy = 84.0% (N=100)
+INFO:tensorflow:2017-12-07 15:20:14.694175: Step 3990: Train accuracy = 100.0%
+INFO:tensorflow:2017-12-07 15:20:14.694363: Step 3990: Cross entropy = 0.013385
+INFO:tensorflow:2017-12-07 15:20:14.742932: Step 3990: Validation accuracy = 84.0% (N=100)
+INFO:tensorflow:2017-12-07 15:20:15.219282: Step 3999: Train accuracy = 100.0%
+INFO:tensorflow:2017-12-07 15:20:15.219640: Step 3999: Cross entropy = 0.008534
+INFO:tensorflow:2017-12-07 15:20:15.280765: Step 3999: Validation accuracy = 83.0% (N=100)
+INFO:tensorflow:Final test accuracy = 77.6% (N=49)
+INFO:tensorflow:Froze 2 variables.
+Converted 2 variables to const ops.
+</code>
+
