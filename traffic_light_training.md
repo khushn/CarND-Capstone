@@ -52,8 +52,9 @@ Did the retraining using:
 ##### Results of training
 <image src="tensorboard_sim_data.png"/>
 
+##### End logs
 <blockquote>
-	0% (N=100)
+
 INFO:tensorflow:2017-12-07 15:20:13.655450: Step 3970: Train accuracy = 100.0%
 INFO:tensorflow:2017-12-07 15:20:13.655661: Step 3970: Cross entropy = 0.012413
 INFO:tensorflow:2017-12-07 15:20:13.702566: Step 3970: Validation accuracy = 69.0% (N=100)
@@ -66,6 +67,7 @@ INFO:tensorflow:2017-12-07 15:20:14.742932: Step 3990: Validation accuracy = 84.
 INFO:tensorflow:2017-12-07 15:20:15.219282: Step 3999: Train accuracy = 100.0%
 INFO:tensorflow:2017-12-07 15:20:15.219640: Step 3999: Cross entropy = 0.008534
 INFO:tensorflow:2017-12-07 15:20:15.280765: Step 3999: Validation accuracy = 83.0% (N=100)
+
 INFO:tensorflow:Final test accuracy = 77.6% (N=49)
 INFO:tensorflow:Froze 2 variables.
 Converted 2 variables to const ops.
