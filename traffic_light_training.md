@@ -84,6 +84,7 @@ Gives out output like:
 
 <blockquote>
 	go 0.999956
+	
 	stop 4.41143e-05
 
 </blockquote>
