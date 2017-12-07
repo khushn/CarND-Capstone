@@ -83,8 +83,9 @@ Converted 2 variables to const ops.
 Gives out output like: 
 
 <blockquote>
-	go 0.999956
 	
+	go 0.999956
+
 	stop 4.41143e-05
 
 </blockquote>
