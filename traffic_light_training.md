@@ -19,14 +19,28 @@ Did the retraining using:
 It finished within 10 minutes or so, on my local laptop. And the model generated was around 16 MB.
 
 #### 5. Validation accuracy
+
+<image src="carla_data_training.png"/>
+
+End logs:
+<blockquote>
+
+	INFO:tensorflow:2017-12-11 16:50:31.105945: Step 3999: Train accuracy = 100.0%
+	INFO:tensorflow:2017-12-11 16:50:31.106222: Step 3999: Cross entropy = 0.000649
+	INFO:tensorflow:2017-12-11 16:50:31.157249: Step 3999: Validation accuracy = 100.0% (N=100)
+	INFO:tensorflow:Final test accuracy = 100.0% (N=37)
+	INFO:tensorflow:Froze 2 variables.
+	Converted 2 variables to const ops.
+
+</blockquote>
 Tensorboard showed good progress. 
-  Was able to get validation accuracy 95% +
+  Was able to get validation accuracy 100% +
 
 #### 6. Testing of the model
   Update: Now basic testing works on individual files, using command line
 
 <code>
-	python tensorflow/examples/label_image/label_image.py --graph=/home/khush/self_driving_car/CarND-Capstone/models/output_graph.pb --labels=/home/khush/self_driving_car/CarND-Capstone/models/output_labels.txt  --input_layer=Placeholder --output_layer=final_result --input_height=224 --input_width=224 --image=/home/khush/self_driving_car/CarND-Capstone/training_images/data/red/frame000542.jpg
+	python tensorflow/examples/label_image/label_image.py --graph=/home/khush/self_driving_car/CarND-Capstone/ros/src/tl_detector/models/carla/output_graph.pb --labels=/home/khush/self_driving_car/CarND-Capstone/ros/src/tl_detector/models/carla/output_labels.txt  --input_layer=input --output_layer=final_result --input_height=224 --input_width=224 --image=/home/khush/self_driving_car/CarND-Capstone/training_images/data/red/frame000542.jpg
 </code>
 
   It gives output like: 
