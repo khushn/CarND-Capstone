@@ -158,26 +158,23 @@ class TLDetector(object):
         return min_dist_loc
 
     def get_light_state(self, light):
-        """Determines the current color of the traffic light
-
-        Args:
-            light (TrafficLight): light to classify
-
-        Returns:
-            int: ID of traffic light color (specified in styx_msgs/TrafficLight)
-
-        """
-        if(not self.has_image):
-            self.prev_light_loc = None
-            return False
-
-        cv_image = self.bridge.imgmsg_to_cv2(self.camera_image, "bgr8")
-
-        #Get classification
-        return self.light_classifier.get_classification(cv_image)
-
-         #dummy implementation for simulator for now
-        #return light.state
+		"""
+		Determines the current color of the traffic light
+		
+		Args:
+		    light (TrafficLight): light to classify
+		
+		Returns:
+		    int: ID of traffic light color (specified in styx_msgs/TrafficLight)
+		"""
+		if(not self.has_image):
+			self.prev_light_loc = None
+			return False
+		
+		cv_image = self.bridge.imgmsg_to_cv2(self.camera_image, "bgr8")
+		
+		#Get classification
+		return self.light_classifier.get_classification(cv_image)
 
     def process_traffic_lights(self):
         """Finds closest visible traffic light, if one exists, and determines its
