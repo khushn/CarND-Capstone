@@ -47,7 +47,8 @@ class TLClassifier(object):
             model_path="models/carla/output_graph.pb"
             labels_path="models/carla/output_labels.txt"
 
-        graph = load_graph(model_path)
+        self.labels = load_labels(labels_path)
+        self.graph = load_graph(model_path)
         rospy.loginfo("Graph %s loaded", model_path)
 
 
@@ -66,21 +67,24 @@ class TLClassifier(object):
 
         input_name = "import/input"
         output_name = "import/final_result"
-        input_operation = graph.get_operation_by_name(input_name);
-        output_operation = graph.get_operation_by_name(output_name);
+        input_operation = self.graph.get_operation_by_name(input_name);
+        output_operation = self.graph.get_operation_by_name(output_name);
 
-        with tf.Session(graph=graph) as sess:
+        with tf.Session(graph=self.graph) as sess:
             results = sess.run(output_operation.outputs[0],
                           {input_operation.outputs[0]: t})
 
         results = np.squeeze(results)
         top_k = results.argsort()[-5:][::-1]
-        labels = load_labels(label_file)
+        
 
         ret = TrafficLight.UNKNOWN
-        if labels[0] == "red":
+        first = top_k[0]
+        if self.labels[first] == "red":
             ret = TrafficLight.RED
-        elif labels[0] == "green":
+        elif self.labels[first] == "green":
             ret = TrafficLight.GREEN
+
+        rospy.loginfo("The detected signal is: %s", self.labels[first])
 
         return TrafficLight.UNKNOWN
