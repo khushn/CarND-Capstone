@@ -62,7 +62,7 @@ class TLClassifier(object):
 
         """
         #TODO implement light color prediction
-        t = read_tensor_from_image_file(image)
+        t = read_tensor_from_image(image)
 
         input_name = "import/input"
         output_name = "import/final_result"
