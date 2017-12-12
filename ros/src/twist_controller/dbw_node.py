@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+
 import rospy
 from std_msgs.msg import Bool
 from dbw_mkz_msgs.msg import ThrottleCmd, SteeringCmd, BrakeCmd, SteeringReport
@@ -9,19 +10,25 @@ from twist_controller import TwistController
 
 '''
 You can build this node only after you have built (or partially built) the `waypoint_updater` node.
+
 You will subscribe to `/twist_cmd` message which provides the proposed linear and angular velocities.
 You can subscribe to any other message that you find important or refer to the document for list
 of messages subscribed to by the reference implementation of this node.
+
 One thing to keep in mind while building this node and the `twist_controller` class is the status
 of `dbw_enabled`. While in the simulator, its enabled all the time, in the real car, that will
 not be the case. This may cause your PID controller to accumulate error because the car could
 temporarily be driven by a human instead of your controller.
+
 We have provided two launch files with this node. Vehicle specific values (like vehicle_mass,
 wheel_base) etc should not be altered in these files.
+
 We have also provided some reference implementations for PID controller and other utility classes.
 You are free to use them or build your own.
+
 Once you have the proposed throttle, brake, and steer values, publish it on the various publishers
 that we have created in the `__init__` function.
+
 '''
 
 class DBWNode(object):
@@ -41,21 +48,15 @@ class DBWNode(object):
         max_steer_angle = rospy.get_param('~max_steer_angle', 8.)
 
         self.steer_pub = rospy.Publisher('/vehicle/steering_cmd',
-                                         SteeringCmd, queue_size=1)
+                                         SteeringCmd, queue_size=30)
         self.throttle_pub = rospy.Publisher('/vehicle/throttle_cmd',
                                             ThrottleCmd, queue_size=1)
         self.brake_pub = rospy.Publisher('/vehicle/brake_cmd',
                                          BrakeCmd, queue_size=1)
-                                         
-                                         
-        throttle_PID_Para = (rospy.get_param('~throttle_Kp', 0.0),rospy.get_param('~throttle_Ki', 0.0),rospy.get_param('~throttle_Kd', 0.0))
-                                 
-               
-        
+
         # TODO: Create `TwistController` object
         self.controller = TwistController(
-            wheel_base, wheel_radius, vehicle_mass, steer_ratio, max_lat_accel, max_steer_angle,throttle_PID_Para,
-            decel_limit,accel_limit,fuel_capacity,brake_deadband
+            wheel_base, wheel_radius, vehicle_mass, steer_ratio, max_lat_accel, max_steer_angle
         )
 
         # TODO: Subscribe to all the topics you need to
@@ -66,14 +67,16 @@ class DBWNode(object):
         self.target_linear_vel = 0
         self.current_vel = 0
         self.target_angular_vel = 0
-        self.dbw_enabled = True
+        self.dbw_enabled = False
 
         self.loop()
 
     def loop(self):
         #rospy.loginfo('dbw node loop called')
 
+        #rate = rospy.Rate(10) # 10Hz
         rate = rospy.Rate(50) # 50Hz
+
         while not rospy.is_shutdown():
             #rospy.logdebug('dbw node while loop start')
 
@@ -85,10 +88,11 @@ class DBWNode(object):
             #                                                     <dbw status>,
             #                                                     <any other argument you need>)
             throttle, brake, steering = self.controller.control(
-                self.target_linear_vel, self.target_angular_vel, self.current_vel,self.dbw_enabled
+                self.target_linear_vel, self.target_angular_vel, self.current_vel
             )
+            rospy.loginfo('dbw node in loop before enable')
             if self.dbw_enabled:
-                #rospy.loginfo('DBW_NODE:throttle=%f,brake=%f,steering=%f',throttle,brake,steering)
+                rospy.loginfo('dbw node enabled publish')
                 self.publish(throttle, brake, steering)
             rate.sleep()
 
@@ -118,7 +122,7 @@ class DBWNode(object):
         self.current_vel = msg.twist.linear.x
 
     def enabledCallback(self, msg):
-        #rospy.loginfo('enable callback')
+        rospy.loginfo('enable callback')
         self.dbw_enabled = msg.data
         
 if __name__ == '__main__':

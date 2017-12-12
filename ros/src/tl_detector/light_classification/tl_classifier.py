@@ -80,10 +80,11 @@ class TLClassifier(object):
 
         ret = TrafficLight.UNKNOWN
         first = top_k[0]
-        if self.labels[first] == "red":
-            ret = TrafficLight.RED
-        elif self.labels[first] == "green":
-            ret = TrafficLight.GREEN
+        if results[first] > .8:
+            if self.labels[first] == "red":
+                ret = TrafficLight.RED
+            elif self.labels[first] == "green":
+                ret = TrafficLight.GREEN
 
         rospy.loginfo("The detected signal is: %s", self.labels[first])
 
