@@ -179,6 +179,7 @@ class TLDetector(object):
          #dummy implementation for simulator for now
         return light.state
 
+
     def process_traffic_lights(self):
         """Finds closest visible traffic light, if one exists, and determines its
             location and color
