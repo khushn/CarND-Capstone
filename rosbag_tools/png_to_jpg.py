@@ -4,7 +4,7 @@ import glob
 import re
 from PIL import Image
 
-f = glob.glob("../training_images/data/*/*.png")
+f = glob.glob("../data/sim_data/SDC_project13/*/*.png")
 
 for fname in f:
 	fname2 = re.sub('.png', '.jpg', fname)

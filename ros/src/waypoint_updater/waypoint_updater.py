@@ -142,7 +142,7 @@ class WaypointUpdater(object):
             # reduce the velocities to 0
             #We loop in the opposite direction as car should stop at the red light wp
             delta_speed = speed/len(next_waypoints)
-            for i in range(n):
+            for i in range(len(next_waypoints)):
                 speed -= delta_speed
                 self.set_waypoint_velocity(next_waypoints, i, speed)                
         else:
