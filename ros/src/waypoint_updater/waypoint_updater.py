@@ -7,6 +7,8 @@ from itertools import islice, cycle
 from std_msgs.msg import Int32
 
 import math
+import tf
+
 
 '''
 This node will publish waypoints from the car's current position to some `x` distance ahead.
@@ -112,33 +114,32 @@ class WaypointUpdater(object):
             waypoint_x = waypoint.pose.pose.position.x
             waypoint_y = waypoint.pose.pose.position.y
 
-            # Convert Quaternions to Euler
-            orient = self.current_pos.orientation
-            q = [orient.x, orient.y, orient.z, orient.w]
-            r, p, yaw = euler_from_quaternion(q)
-
-            # Convert waypoint to car's reference
-            wp_x = waypoint_x - carx
-            wp_y = waypoint_y - cary
-            wp_x = wp_x*cos(yaw) + wp_y*sin(yaw)
-            wp_y = -wp_x*sin(yaw) + wp_y*cos(yaw)
-
-            dist = math.sqrt(wp_x**2 + wp_y**2)
-
             # dist between car and waypoint
             dist = math.sqrt((carx -waypoint_x)**2  + (cary -waypoint_y)**2)
             
             # check if this distance is minimum distance calculated so far
-            if dist < min_distance and wp_x > 0:
+            if dist < min_distance:
                 min_distance = dist
                 min_dist_loc = ind 
 
         # Since we want to get the next way point, 
         # in case we have the previous point get the next one
         # We need to get the car's orientation to get that, 
-        # till then we anyway increment that, as its a better thing
-        # then having the previous one
-        min_dist_loc=(min_dist_loc+1)%num_pts
+        # Convert Quaternions to Euler
+        orient = self.current_pos.orientation
+        q = [orient.x, orient.y, orient.z, orient.w]
+        _, _, yaw = tf.transformations.euler_from_quaternion(q)
+
+        tmp_wp = self.base_waypoints[min_dist_loc]
+        # Convert waypoint to car's reference
+        wp_x = tmp_wp.pose.pose.position.x - carx
+        wp_y = tmp_wp.pose.pose.position.y - cary
+        car_coord_x = wp_x*math.cos(yaw) + wp_y*math.sin(yaw)
+        #car_coord_y = -wp_x*sin(yaw) + wp_y*cos(yaw)
+
+        if car_coord_x < 0:
+            min_dist_loc=(min_dist_loc+1)%num_pts
+
         if self.last_wp_ind is not None:
             self.current_speed = self.get_waypoint_velocity(self.base_waypoints, min_dist_loc)
         
