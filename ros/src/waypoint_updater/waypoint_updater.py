@@ -24,7 +24,7 @@ TODO (for Yousuf and Aaron): Stopline location for each traffic light.
 '''
 
 LOOKAHEAD_WPS = 50 # Number of waypoints we will publish. You can change this number
-MAX_ACCL = 10.
+MAX_ACCL = 10.0
 
 class WaypointUpdater(object):
     def __init__(self):
@@ -111,11 +111,25 @@ class WaypointUpdater(object):
             waypoint = self.base_waypoints[ind]
             waypoint_x = waypoint.pose.pose.position.x
             waypoint_y = waypoint.pose.pose.position.y
+
+            # Convert Quaternions to Euler
+            orient = self.current_pos.orientation
+            q = [orient.x, orient.y, orient.z, orient.w]
+            r, p, yaw = euler_from_quaternion(q)
+
+            # Convert waypoint to car's reference
+            wp_x = waypoint_x - carx
+            wp_y = waypoint_y - cary
+            wp_x = wp_x*cos(yaw) + wp_y*sin(yaw)
+            wp_y = -wp_x*sin(yaw) + wp_y*cos(yaw)
+
+            dist = math.sqrt(wp_x**2 + wp_y**2)
+
             # dist between car and waypoint
             dist = math.sqrt((carx -waypoint_x)**2  + (cary -waypoint_y)**2)
             
             # check if this distance is minimum distance calculated so far
-            if dist < min_distance:
+            if dist < min_distance and wp_x > 0:
                 min_distance = dist
                 min_dist_loc = ind 
 
