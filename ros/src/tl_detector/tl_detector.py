@@ -11,9 +11,9 @@ import tf
 import cv2
 import yaml
 import math
+import tf
 
 STATE_COUNT_THRESHOLD = 3
-TL_DISTANCE_THRESHOLD = 30
 
 class TLDetector(object):
     def __init__(self):
@@ -49,6 +49,7 @@ class TLDetector(object):
         self.bridge = CvBridge()
 
         carla_run = True if rospy.get_param('~carla_run', 0) == 1 else False
+        self.TL_DISTANCE_THRESHOLD = rospy.get_param('~tl_distance_thresh', 20) 
         self.light_classifier = TLClassifier(carla_run)
         self.listener = tf.TransformListener()
 
@@ -199,14 +200,25 @@ class TLDetector(object):
         waypoint_x = near_wp.pose.pose.position.x
         waypoint_y = near_wp.pose.pose.position.y
 
+        # Get Car;s orientation Convert Quaternions to Euler
+        # We want to check only if the stop line is ahead of the car
+        orient = near_wp.pose.pose.orientation
+        q = [orient.x, orient.y, orient.z, orient.w]
+        _, _, yaw = tf.transformations.euler_from_quaternion(q)
+
         #find the closest visible traffic light (if one exists)
         min_distance = float("inf")
         tl_stop_wp=-1
         for i in range(len(self.stop_line_positions)):
             stop_x = self.stop_line_positions[i][0]
             stop_y = self.stop_line_positions[i][1]
+            # Convert waypoint to car's reference
+            wp_x = stop_x - waypoint_x
+            wp_y = stop_y - waypoint_y
+            car_coord_x = wp_x*math.cos(yaw) + wp_y*math.sin(yaw)
+
             dist = math.sqrt((stop_x -waypoint_x)**2  + (stop_y -waypoint_y)**2)
-            if dist < TL_DISTANCE_THRESHOLD and dist < min_distance:
+            if car_coord_x > 0 and dist < self.TL_DISTANCE_THRESHOLD and dist < min_distance:
                 min_distance = dist
                 light=self.lights[i]
                 tl_stop_wp = self.stop_line_wps[i]
