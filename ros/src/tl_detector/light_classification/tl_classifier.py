@@ -80,5 +80,5 @@ class TLClassifier(object):
                 ret = TrafficLight.RED
             elif self.labels[first] == "green" or self.labels[first] == "go":
                 ret = TrafficLight.GREEN
-        rospy.loginfo("The detected signal is: %s", self.labels[first])
+        rospy.logdebug("The detected signal is: %s", self.labels[first])
         return ret
