@@ -3,7 +3,7 @@ This is the project repo for the final project of the Udacity Self-Driving Car N
 ### Team - The Distracted
 
 <table>
-	<th><td>Name</td><td>Github account</td></th>
+	<tr><th>Name</th><th>Github account</th></tr>
 	<tr><td>Khushnood Naqvi</td><td>https://github.com/khushn</td></tr>
 	<tr><td>Vishal Kharjul</td><td>https://github.com/vishalkharjul</td></tr>
 	<tr><td>Koichi Takabatake</td><td>https://github.com/vilion</td></tr>
