@@ -184,7 +184,7 @@ class TLDetector(object):
             state = TrafficLight.RED
         else:
             state = TrafficLight.GREEN
-        rospy.loginfo("The detected signal is %s", state)
+        #rospy.loginfo("The detected signal is %s", state)
 
         return state
 
