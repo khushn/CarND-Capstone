@@ -2,7 +2,7 @@ from styx_msgs.msg import TrafficLight
 import rospy
 import argparse
 import sys
-
+import cv2
 import numpy as np
 import tensorflow as tf
 
@@ -80,5 +80,30 @@ class TLClassifier(object):
                 ret = TrafficLight.RED
             elif self.labels[first] == "green" or self.labels[first] == "go":
                 ret = TrafficLight.GREEN
+
+        ret2 = self.classify_using_hsv(image)
+        if ret2 == TrafficLight.RED:
+            ret = ret2
+
         rospy.logdebug("The detected signal is: %s", self.labels[first])
-        return ret
+        return 
+
+    """
+    We use an alternative method, to find out the Red signal. 
+    We Or it with MobileNet classification. 
+    This should improve things. As we stop when either of the two sub classifiers 
+    report a Red
+    """
+    def classify_using_hsv(self, image):
+        lower_filter=np.array([150,125,125])
+        upper_filter=np.array([255,255,255])
+        threshold=16000
+        
+        state = TrafficLight.UNKNOWN
+        hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
+        mask = cv2.inRange(hsv,lower_filter, upper_filter)
+        if mask.sum(axis=None)>threshold:
+            state = TrafficLight.RED
+        else:
+            state = TrafficLight.GREEN
+        return state
