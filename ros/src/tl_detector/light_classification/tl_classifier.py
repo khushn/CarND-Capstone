@@ -59,34 +59,38 @@ class TLClassifier(object):
             int: ID of traffic light color (specified in styx_msgs/TrafficLight)
         """
         #TODO implement light color prediction
-        t = read_tensor_from_image(image)
-        
-        input_name = "import/input"
-        output_name = "import/final_result"
-        input_operation = self.graph.get_operation_by_name(input_name)
-        output_operation = self.graph.get_operation_by_name(output_name)
-
-
-        with tf.Session(graph=self.graph) as sess:
-                results = sess.run(output_operation.outputs[0],
-                          {input_operation.outputs[0]: t})
-        results = np.squeeze(results)
-        top_k = results.argsort()[-5:][::-1]
-
         ret=TrafficLight.UNKNOWN
-        first = top_k[0]
-        if results[first] > .8:
-            if self.labels[first] == "red" or self.labels[first] == "stop":
-                ret = TrafficLight.RED
-            elif self.labels[first] == "green" or self.labels[first] == "go":
-                ret = TrafficLight.GREEN
+        if self.carla_run:
+            t = read_tensor_from_image(image)
+            
+            input_name = "import/input"
+            output_name = "import/final_result"
+            input_operation = self.graph.get_operation_by_name(input_name)
+            output_operation = self.graph.get_operation_by_name(output_name)
+
+
+            with tf.Session(graph=self.graph) as sess:
+                    results = sess.run(output_operation.outputs[0],
+                              {input_operation.outputs[0]: t})
+            results = np.squeeze(results)
+            top_k = results.argsort()[-5:][::-1]
+
+            
+            first = top_k[0]
+            if results[first] > .8:
+                if self.labels[first] == "red" or self.labels[first] == "stop":
+                    ret = TrafficLight.RED
+                elif self.labels[first] == "green" or self.labels[first] == "go":
+                    ret = TrafficLight.GREEN
+
+            rospy.logdebug("The detected signal is: %s", self.labels[first])
 
         ret2 = self.classify_using_hsv(image)
-        if ret2 == TrafficLight.RED:
+        if ret2 == TrafficLight.RED or ret == TrafficLight.UNKNOWN:
             ret = ret2
 
-        rospy.logdebug("The detected signal is: %s", self.labels[first])
-        return 
+        
+        return ret
 
     """
     We use an alternative method, to find out the Red signal. 
